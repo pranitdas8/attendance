@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1038031921618",
+    "project_id": "chatappflutter-70ca2",
+    "storage_bucket": "chatappflutter-70ca2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038031921618:android:00480f1dded680e8d0e80b",
+        "android_client_info": {
+          "package_name": "com.example.attendance_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVpjln1YuuB2M1BqstBipUPcm9iS3vT-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038031921618:android:54f6eb09cb10c4ecd0e80b",
+        "android_client_info": {
+          "package_name": "com.example.chatapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAVpjln1YuuB2M1BqstBipUPcm9iS3vT-4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
