@@ -17,7 +17,7 @@ class AppRoutes {
 
   static Map<String, WidgetBuilder> routes = {
     androidLarge1HomeScreen: (context) => AndroidLarge1HomeScreen(),
-    androidLarge1LoginScreen: (context) => AndroidLarge1LoginScreen(),
+    androidLarge1LoginScreen: (context) => LoginPage(),
     androidLarge1RegisterScreen: (context) => AndroidLarge1RegisterScreen(),
     appNavigationScreen: (context) => AppNavigationScreen()
   };

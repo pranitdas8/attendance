@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:attendance_app/widgets/custom_elevated_button.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
@@ -5,7 +7,7 @@ import 'package:attendance_app/core/app_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class AndroidLarge1RegisterScreen extends StatelessWidget {
-  AndroidLarge1RegisterScreen({Key? key}) : super(key: key);
+  AndroidLarge1RegisterScreen({super.key});
 
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
 
@@ -71,7 +73,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                   height: 40.v,
                                   width: 150.h,
                                   child: TextField(
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: "Name",
                                       border: OutlineInputBorder(),
                                     ),
@@ -100,7 +102,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                         .h), // Add spacing between icon and text field
                                 Expanded(
                                   child: TextField(
-                                    decoration: InputDecoration(
+                                    decoration: const InputDecoration(
                                       hintText: "Email",
                                       border: OutlineInputBorder(),
                                     ),
@@ -131,7 +133,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                           .h), // Add spacing between icon and text field
                                   Expanded(
                                     child: TextField(
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         hintText: "Employee ID",
                                         border: OutlineInputBorder(),
                                       ),
@@ -163,7 +165,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                           .h), // Add spacing between icon and text field
                                   Expanded(
                                     child: TextField(
-                                      decoration: InputDecoration(
+                                      decoration: const InputDecoration(
                                         hintText: "Department",
                                         border: OutlineInputBorder(),
                                       ),
@@ -191,11 +193,12 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                     padding: EdgeInsets.only(left: 12.h),
                                     child: TextButton(
                                       onPressed: () {
+                                        // _storeDataInFirestore();
                                         // Add functionality to capture image
                                         print(
                                             "Capture button pressed"); // Debug: Print when the capture button is pressed
                                       },
-                                      child: Text(
+                                      child: const Text(
                                         "Capture",
                                         style: TextStyle(
                                           color: Colors
@@ -207,26 +210,32 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                 ],
                               ),
                             ),
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.white,
+                                elevation: 3,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                ),
+                              ),
+                              child: Container(
+                                height: 50.h,
+                                width: double.infinity,
+                                decoration: const BoxDecoration(),
+                                child: const Center(
+                                  child: Text(
+                                    "Login",
+                                    style: TextStyle(
+                                        fontSize: 18,
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                ),
+                              ),
+                            ),
                           ],
-                        ),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Container(
-                        height: 122.adaptSize,
-                        width: 122.adaptSize,
-                        margin: EdgeInsets.only(top: 97.v, right: 24.h),
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 33.h, vertical: 39.v),
-                        decoration: AppDecoration.outlineOnPrimary.copyWith(
-                          borderRadius: BorderRadiusStyle.circleBorder61,
-                        ),
-                        child: CustomImageView(
-                          imagePath: ImageConstant.imgCheckmark,
-                          height: 37.v,
-                          width: 53.h,
-                          alignment: Alignment.topCenter,
                         ),
                       ),
                     ),

@@ -48,8 +48,8 @@ class AndroidLarge1HomeScreen extends StatelessWidget {
                 width: 167.h,
                 text: "Login",
                 onPressed: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => AndroidLarge1LoginScreen()));
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => LoginPage()));
                 },
               ),
               SizedBox(height: 20.v),
