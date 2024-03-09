@@ -9,17 +9,6 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
-  // if (kIsWeb) {
-  //   await Firebase.initializeApp(
-  //       options: FirebaseOptions(
-  //           apiKey: Constants.apiKey,
-  //           appId: Constants.appId,
-  //           messagingSenderId: Constants.messagingSenderId,
-  //           projectId: Constants.projectId));
-  // } else {
-  //   await Firebase.initializeApp();
-  // }
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

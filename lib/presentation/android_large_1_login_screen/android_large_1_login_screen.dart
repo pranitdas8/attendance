@@ -48,10 +48,10 @@ class AndroidLarge1LoginScreen extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   child: Padding(
                     padding: EdgeInsets.only(right: 9.h),
-                    child: Text(
-                      "Forgotten Password ?",
-                      style: theme.textTheme.bodySmall,
-                    ),
+                    // child: Text(
+                    //   "Forgotten Password ?",
+                    //   style: theme.textTheme.bodySmall,
+                    // ),
                   ),
                 ),
                 SizedBox(height: 74.v),
