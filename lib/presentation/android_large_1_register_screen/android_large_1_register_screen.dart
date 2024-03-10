@@ -1,15 +1,30 @@
-// ignore_for_file: avoid_print
+import 'dart:io';
 
 import 'package:attendance_app/widgets/custom_elevated_button.dart';
 import 'package:flutter_svg_provider/flutter_svg_provider.dart' as fs;
 import 'package:flutter/material.dart';
 import 'package:attendance_app/core/app_export.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 
-class AndroidLarge1RegisterScreen extends StatelessWidget {
-  AndroidLarge1RegisterScreen({super.key});
+class AndroidLarge1RegisterScreen extends StatefulWidget {
+  AndroidLarge1RegisterScreen({Key? key}) : super(key: key);
 
+  @override
+  _AndroidLarge1RegisterScreenState createState() =>
+      _AndroidLarge1RegisterScreenState();
+}
+
+class _AndroidLarge1RegisterScreenState
+    extends State<AndroidLarge1RegisterScreen> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController employeeIdController = TextEditingController();
+  final TextEditingController departmentController = TextEditingController();
+
+  File? _imageFile;
 
   @override
   Widget build(BuildContext context) {
@@ -77,10 +92,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                       hintText: "Name",
                                       border: OutlineInputBorder(),
                                     ),
-                                    onChanged: (value) {
-                                      print(
-                                          "Name: $value"); // Debug: Print the entered name
-                                    },
+                                    controller: nameController,
                                   ),
                                 ),
                               ],
@@ -106,10 +118,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                       hintText: "Email",
                                       border: OutlineInputBorder(),
                                     ),
-                                    onChanged: (value) {
-                                      print(
-                                          "Email: $value"); // Debug: Print the entered email
-                                    },
+                                    controller: emailController,
                                   ),
                                 ),
                               ],
@@ -137,10 +146,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                         hintText: "Employee ID",
                                         border: OutlineInputBorder(),
                                       ),
-                                      onChanged: (value) {
-                                        print(
-                                            "Employee ID: $value"); // Debug: Print the entered employee ID
-                                      },
+                                      controller: employeeIdController,
                                     ),
                                   ),
                                 ],
@@ -169,10 +175,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                         hintText: "Department",
                                         border: OutlineInputBorder(),
                                       ),
-                                      onChanged: (value) {
-                                        print(
-                                            "Department: $value"); // Debug: Print the entered department
-                                      },
+                                      controller: departmentController,
                                     ),
                                   ),
                                 ],
@@ -192,12 +195,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                   Padding(
                                     padding: EdgeInsets.only(left: 12.h),
                                     child: TextButton(
-                                      onPressed: () {
-                                        // _storeDataInFirestore();
-                                        // Add functionality to capture image
-                                        print(
-                                            "Capture button pressed"); // Debug: Print when the capture button is pressed
-                                      },
+                                      onPressed: _getImage,
                                       child: const Text(
                                         "Capture",
                                         style: TextStyle(
@@ -211,7 +209,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                               ),
                             ),
                             ElevatedButton(
-                              onPressed: () {},
+                              onPressed: _storeDataInFirestore,
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blue,
                                 foregroundColor: Colors.white,
@@ -226,7 +224,7 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
                                 decoration: const BoxDecoration(),
                                 child: const Center(
                                   child: Text(
-                                    "Login",
+                                    "Submit",
                                     style: TextStyle(
                                         fontSize: 18,
                                         color: Colors.black,
@@ -276,37 +274,62 @@ class AndroidLarge1RegisterScreen extends StatelessWidget {
             margin: EdgeInsets.only(top: 63.v),
             buttonStyle: CustomButtonStyles.outlinePrimaryLR30,
             alignment: Alignment.topRight,
-            onPressed: () {
-              // Add functionality to store data in Firestore when the login button is pressed
-              print(
-                  "Login button pressed"); // Debug: Print when the login button is pressed
-              _storeDataInFirestore();
-            },
+            onPressed: _storeDataInFirestore,
           ),
         ],
       ),
     );
   }
 
-  void _storeDataInFirestore() {
-    // Here, you can write the code to store the data in Firestore
-    // Access the data from the text fields and use the Firestore instance to add a document to the "Registration" collection
-    // For example:
-    firestore.collection("Registration").add({
-      "name":
-          "John Doe", // Replace with the actual name entered in the text field
-      "email":
-          "john.doe@example.com", // Replace with the actual email entered in the text field
-      "employee_id":
-          "12345", // Replace with the actual employee ID entered in the text field
-      "department":
-          "IT", // Replace with the actual department entered in the text field
-    }).then((value) {
-      print(
-          "Data stored successfully"); // Debug: Print when the data is stored successfully
-    }).catchError((error) {
-      print(
-          "Error storing data: $error"); // Debug: Print if there's an error while storing the data
+  Future<void> _getImage() async {
+    final ImagePicker _picker = ImagePicker();
+    final XFile? image = await _picker.pickImage(
+        source: ImageSource
+            .gallery); // Change source to ImageSource.camera for capturing from camera
+    setState(() {
+      _imageFile = image != null ? File(image.path) : null;
     });
+  }
+
+  void _storeDataInFirestore() async {
+    // Upload image to Firebase Storage
+    if (_imageFile != null) {
+      try {
+        // Create a reference to the image file in Firebase Storage
+        String fileName =
+            DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
+        firebase_storage.Reference ref =
+            firebase_storage.FirebaseStorage.instance.ref().child(fileName);
+
+        // Upload the image file to Firebase Storage
+        await ref.putFile(_imageFile!);
+
+        // Get the download URL of the uploaded image
+        String imageUrl = await ref.getDownloadURL();
+
+        // Store the image URL and other data in Firestore
+        await firestore.collection("Registration").add({
+          "name": nameController.text,
+          "email": emailController.text,
+          "employee_id": employeeIdController.text,
+          "department": departmentController.text,
+          "image_url": imageUrl,
+        });
+
+        print("Data stored successfully with image URL: $imageUrl");
+      } catch (error) {
+        print("Error uploading image to Firebase Storage: $error");
+      }
+    } else {
+      // If no image is selected, store data without image URL
+      await firestore.collection("Registration").add({
+        "name": nameController.text,
+        "email": emailController.text,
+        "employee_id": employeeIdController.text,
+        "department": departmentController.text,
+      });
+
+      print("Data stored successfully without image URL");
+    }
   }
 }
