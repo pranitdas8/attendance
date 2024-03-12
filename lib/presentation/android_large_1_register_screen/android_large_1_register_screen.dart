@@ -24,7 +24,7 @@ class _AndroidLarge1RegisterScreenState
   final TextEditingController employeeIdController = TextEditingController();
   final TextEditingController departmentController = TextEditingController();
 
-  File? _imageFile;
+  File? _imageFile; // Nullable to handle no image picked or captured
 
   @override
   Widget build(BuildContext context) {
@@ -291,45 +291,37 @@ class _AndroidLarge1RegisterScreenState
     });
   }
 
-  void _storeDataInFirestore() async {
-    // Upload image to Firebase Storage
-    if (_imageFile != null) {
-      try {
-        // Create a reference to the image file in Firebase Storage
-        String fileName =
-            DateTime.now().millisecondsSinceEpoch.toString() + '.jpg';
-        firebase_storage.Reference ref =
-            firebase_storage.FirebaseStorage.instance.ref().child(fileName);
-
-        // Upload the image file to Firebase Storage
-        await ref.putFile(_imageFile!);
-
-        // Get the download URL of the uploaded image
-        String imageUrl = await ref.getDownloadURL();
-
-        // Store the image URL and other data in Firestore
-        await firestore.collection("Registration").add({
-          "name": nameController.text,
-          "email": emailController.text,
-          "employee_id": employeeIdController.text,
-          "department": departmentController.text,
-          "image_url": imageUrl,
-        });
-
-        print("Data stored successfully with image URL: $imageUrl");
-      } catch (error) {
-        print("Error uploading image to Firebase Storage: $error");
-      }
-    } else {
-      // If no image is selected, store data without image URL
-      await firestore.collection("Registration").add({
-        "name": nameController.text,
-        "email": emailController.text,
-        "employee_id": employeeIdController.text,
-        "department": departmentController.text,
-      });
-
-      print("Data stored successfully without image URL");
+  Future<String?> _uploadImage(File? imageFile) async {
+    if (imageFile == null) return null;
+    try {
+      firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+          .ref()
+          .child('images')
+          .child('${DateTime.now().millisecondsSinceEpoch}.jpg');
+      firebase_storage.UploadTask uploadTask = ref.putFile(imageFile);
+      await uploadTask;
+      return await ref.getDownloadURL();
+    } catch (e) {
+      print('Error uploading image: $e');
+      return null;
     }
+  }
+
+  void _storeDataInFirestore() async {
+    String? imageUrl = await _uploadImage(_imageFile);
+    // Here, you can write the code to store the data in Firestore
+    // Access the data from the text fields and use the Firestore instance to add a document to the "Registration" collection
+    // For example:
+    firestore.collection("Registration").add({
+      "name": nameController.text,
+      "email": emailController.text,
+      "employee_id": employeeIdController.text,
+      "department": departmentController.text,
+      "image_url": imageUrl,
+    }).then((value) {
+      print("Data stored successfully");
+    }).catchError((error) {
+      print("Error storing data: $error");
+    });
   }
 }
