@@ -285,25 +285,19 @@ class _AndroidLarge1RegisterScreenState
     final ImagePicker _picker = ImagePicker();
     final XFile? image = await _picker.pickImage(
         source: ImageSource
-            .gallery); // Change source to ImageSource.camera for capturing from camera
+            .camera); // Change source to ImageSource.camera for capturing from camera
     setState(() {
       _imageFile = image != null ? File(image.path) : null;
     });
   }
 
   void _storeDataInFirestore() async {
-    // Ensure that employee ID is not empty
-    String employeeId = employeeIdController.text.trim();
-    if (employeeId.isEmpty) {
-      print("Employee ID is required.");
-      return;
-    }
-
     // Upload image to Firebase Storage
     if (_imageFile != null) {
       try {
         // Create a reference to the image file in Firebase Storage
-        String fileName = "$employeeId.jpg"; // Use employee ID as file name
+        String fileName = employeeIdController.text +
+            '.jpg'; // Name the image using employee ID
         firebase_storage.Reference ref =
             firebase_storage.FirebaseStorage.instance.ref().child(fileName);
 
@@ -317,7 +311,7 @@ class _AndroidLarge1RegisterScreenState
         await firestore.collection("Registration").add({
           "name": nameController.text,
           "email": emailController.text,
-          "employee_id": employeeId,
+          "employee_id": employeeIdController.text,
           "department": departmentController.text,
           "image_url": imageUrl,
         });
@@ -331,7 +325,7 @@ class _AndroidLarge1RegisterScreenState
       await firestore.collection("Registration").add({
         "name": nameController.text,
         "email": emailController.text,
-        "employee_id": employeeId,
+        "employee_id": employeeIdController.text,
         "department": departmentController.text,
       });
 
