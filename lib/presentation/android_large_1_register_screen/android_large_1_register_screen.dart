@@ -292,12 +292,39 @@ class _AndroidLarge1RegisterScreenState
   }
 
   void _storeDataInFirestore() async {
+    // Check if employee ID already exists
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection("Registration")
+        .where("employee_id", isEqualTo: employeeIdController.text)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      // If employee ID already exists, display error message
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text("Error"),
+            content: Text("Employee ID already exists"),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text("OK"),
+              ),
+            ],
+          );
+        },
+      );
+      return; // Exit the function if employee ID already exists
+    }
+
     // Upload image to Firebase Storage
     if (_imageFile != null) {
       try {
         // Create a reference to the image file in Firebase Storage
-        String fileName = employeeIdController.text +
-            '.jpg'; // Name the image using employee ID
+        String fileName = employeeIdController.text + '.jpg';
         firebase_storage.Reference ref =
             firebase_storage.FirebaseStorage.instance.ref().child(fileName);
 
@@ -316,6 +343,9 @@ class _AndroidLarge1RegisterScreenState
           "image_url": imageUrl,
         });
 
+        // Show registered message
+        _showRegisteredMessage();
+
         print("Data stored successfully with image URL: $imageUrl");
       } catch (error) {
         print("Error uploading image to Firebase Storage: $error");
@@ -329,7 +359,31 @@ class _AndroidLarge1RegisterScreenState
         "department": departmentController.text,
       });
 
+      // Show registered message
+      _showRegisteredMessage();
+
       print("Data stored successfully without image URL");
     }
+  }
+
+  // Function to show registered message
+  void _showRegisteredMessage() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text("Registered"),
+          content: Text("You have been successfully registered"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
