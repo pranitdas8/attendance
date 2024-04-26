@@ -1,5 +1,6 @@
 import 'package:attendance_app/presentation/android_large_1_login_screen/android_large_1_login_screen.dart';
 import 'package:attendance_app/presentation/android_large_1_register_screen/android_large_1_register_screen.dart';
+import 'package:attendance_app/presentation/capture.dart';
 import 'package:attendance_app/widgets/custom_elevated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:attendance_app/core/app_export.dart';
@@ -65,6 +66,11 @@ class AndroidLarge1HomeScreen extends StatelessWidget {
               CustomElevatedButton(
                 width: 205.h,
                 text: "Capture Image",
+                onPressed: () {
+                  print("capture called");
+                  Navigator.of(context).push(
+                      MaterialPageRoute(builder: (context) => capturescreen()));
+                },
               ),
               Spacer(),
               CustomImageView(

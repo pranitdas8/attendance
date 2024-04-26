@@ -1,0 +1,78 @@
+import 'dart:convert'; // For JSON decoding
+import 'dart:io'; // For handling files
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart'; // For picking an image from the device
+
+class capturescreen extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<capturescreen> {
+  final String backendUrl =
+      'http://10.0.2.2:5000/predict'; // Flask server endpoint
+  String predictedClass = 'Awaiting prediction'; // Default state
+
+  Future<void> sendImageToPredict(XFile file) async {
+    try {
+      // Read file data and encode it as Base64
+      var fileData = await File(file.path).readAsBytes();
+      print("filedata");
+      var base64Image = base64Encode(fileData);
+      print(base64Image);
+      // Prepare request with Base64 encoded data
+      var uri = Uri.parse(backendUrl);
+      var requestBody = {'image': base64Image}; // JSON data to send in POST
+
+      var response = await http.post(uri,
+          body: json.encode(requestBody),
+          headers: {'Content-Type': 'application/json'});
+
+      if (response.statusCode == 200) {
+        var jsonResponse = json.decode(response.body);
+        var predictedClass = jsonResponse['predicted_class'].toString();
+
+        setState(() {
+          this.predictedClass = predictedClass;
+        });
+      } else {
+        print('${response.body}');
+        print('Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Error sending image: $e');
+    }
+  }
+
+  Future<void> pickImageAndPredict() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      await sendImageToPredict(pickedFile);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Flutter-Backend Connection'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text('Prediction Result: $predictedClass'),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: pickImageAndPredict,
+              child: Text('Pick Image and Predict'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
